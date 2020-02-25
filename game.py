@@ -3,6 +3,7 @@ from constants import *
 import ai
 
 import pygame as pg
+import random as rn
 import copy
 
 
@@ -11,6 +12,7 @@ screen = pg.display.set_mode(W_SIZE)
 a_canvas = pg.Surface(W_SIZE,pg.SRCALPHA,32)
 
 lbimg = pg.transform.scale(pg.image.load("lb.png").convert_alpha(),(H_WIDTH,H_HEIGHT))
+diceimg = pg.transform.scale(pg.image.load("dice.png").convert_alpha(),(H_WIDTH,H_HEIGHT))
 
 dragC = None
 brd = Board()
@@ -34,14 +36,21 @@ while run:
         elif e.type == pg.MOUSEBUTTONDOWN:
             mpos = pg.mouse.get_pos()
             if mpos[0] > G_X_SPAN and mpos[1] < A_Y * 2:
-                history = brd.getHistory()
-                res = brd.getResults()
-                aig = ai.getRow(history,res)
-                brd.postGuess(aig[0])
-                if brd.gameover:
-                    brd.showAns = True
-                    if res[0] == 4:
-                        win = True
+                if init:
+                    history = brd.getHistory()
+                    res = brd.getResults()
+                    aig = ai.getRow(history,res)
+                    brd.postGuess(aig[0])
+                    if brd.gameover:
+                        brd.showAns = True
+                        if res[0] == 4:
+                            win = True
+                else:
+                    ans = []
+                    for i in range(4):
+                        ans.append(rn.randint(1,6))
+                    brd.setAns(ans)
+                    init = True
                 guess = [None,None,None,None]
                 activeRow = brd.getActiveRow()
                 continue
@@ -87,11 +96,17 @@ while run:
 
     a_canvas.fill((0,0,0,0))
     brd.draw(screen)
-    a_canvas.blit(lbimg,(H_X,H_Y))
 
     if not init:
         for p in activeRow:
             pg.draw.circle(screen,BRD_HOLE,p,DOT_RADIUS)
+        a_canvas.blit(diceimg,(H_X,H_Y))
+    else:
+        a_canvas.blit(lbimg,(H_X,H_Y))
+        (_,p) = ai.getRow(brd.getHistory(),brd.getResults())
+        f = pg.font.Font(pg.font.get_default_font(),12)
+        ptext = f.render("{}".format(p),True,(0,0,0))
+        screen.blit(ptext,(G_X_SPAN+8,A_Y * 2 - 5 - 12))
     for c in sources:
         c.draw(screen)
     for c in guess: 
@@ -103,12 +118,6 @@ while run:
         shadow.col = (0,0,0,125)
         shadow.draw(a_canvas)
         dragC.draw(a_canvas)
-
-    if init:
-        (_,p) = ai.getRow(brd.getHistory(),brd.getResults())
-        f = pg.font.Font(pg.font.get_default_font(),12)
-        ptext = f.render("{}".format(p),True,(0,0,0))
-        screen.blit(ptext,(G_X_SPAN+8,A_Y * 2 - 5 - 12))
     
     screen.blit(a_canvas,(0,0))
     pg.display.update()
