@@ -103,6 +103,12 @@ while run:
         shadow.col = (0,0,0,125)
         shadow.draw(a_canvas)
         dragC.draw(a_canvas)
+
+    if init:
+        (_,p) = ai.getRow(brd.getHistory(),brd.getResults())
+        f = pg.font.Font(pg.font.get_default_font(),12)
+        ptext = f.render("{}".format(p),True,(0,0,0))
+        screen.blit(ptext,(G_X_SPAN+8,A_Y * 2 - 5 - 12))
     
     screen.blit(a_canvas,(0,0))
     pg.display.update()
