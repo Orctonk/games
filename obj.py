@@ -56,6 +56,7 @@ class Board:
                     if int(guess[j]) != self.ans[j] and int(guess[i]) == self.ans[j] and not j in taken:
                         white += 1
                         taken.append(j)
+                        break
         self.res.append((black,white))
         if black == 4 or len(self.history) == 6:
             self.gameover = True

@@ -13,6 +13,7 @@ def getRight(guess, ans):
                 if int(guess[j]) != ans[j] and int(guess[i]) == ans[j] and not j in taken:
                     white += 1
                     taken.append(j)
+                    break
 
     return (black,white)
 
