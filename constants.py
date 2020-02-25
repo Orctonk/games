@@ -27,6 +27,6 @@ H_HEIGHT    =   int(H_Y * 8)
 
 BRD_FG      =   (150,75,0)
 BRD_HL      =   (170,85,0)
-BRD_HOLE    =   (60,30,0)
+BRD_HOLE    =   (80,40,0)
 BRD_EXT     =   (180,90,0)
 BRD_SHD     =   (110,55,0)
