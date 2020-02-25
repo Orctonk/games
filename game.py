@@ -1,12 +1,16 @@
 from obj import Circle,Board
 from constants import *
+import ai
 
 import pygame as pg
 import copy
 
+
 pg.init()
 screen = pg.display.set_mode(W_SIZE)
 a_canvas = pg.Surface(W_SIZE,pg.SRCALPHA,32)
+
+lbimg = pg.transform.scale(pg.image.load("lb.png").convert_alpha(),(H_WIDTH,H_HEIGHT))
 
 dragC = None
 brd = Board()
@@ -28,10 +32,23 @@ while run:
         if e.type == pg.QUIT:
             run = False
         elif e.type == pg.MOUSEBUTTONDOWN:
+            mpos = pg.mouse.get_pos()
+            if mpos[0] > G_X_SPAN and mpos[1] < A_Y * 2:
+                history = brd.getHistory()
+                res = brd.getResults()
+                aig = ai.getRow(history,res)
+                brd.postGuess(aig[0])
+                if brd.gameover:
+                    brd.showAns = True
+                    if res[0] == 4:
+                        win = True
+                guess = [None,None,None,None]
+                activeRow = brd.getActiveRow()
+                continue
             for c in sources+guess:
                 if c == None:
                     continue
-                if c.isInside(pg.mouse.get_pos()):
+                if c.isInside(mpos):
                     if c in sources:
                         dragC = copy.copy(c)
                     else:
@@ -70,6 +87,7 @@ while run:
 
     a_canvas.fill((0,0,0,0))
     brd.draw(screen)
+    a_canvas.blit(lbimg,(H_X,H_Y))
 
     if not init:
         for p in activeRow:
@@ -84,9 +102,9 @@ while run:
         shadow.pos = (shadow.pos[0] + 5,shadow.pos[1] + 5)
         shadow.col = (0,0,0,125)
         shadow.draw(a_canvas)
-        screen.blit(a_canvas,(0,0))
-        dragC.draw(screen)
+        dragC.draw(a_canvas)
     
+    screen.blit(a_canvas,(0,0))
     pg.display.update()
 
 pg.quit()

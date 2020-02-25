@@ -20,6 +20,11 @@ C_Y         =   int(W_HEIGHT * 7.5 / 8)
 R_SPACING   =   int(G_Y_SPACING/3)  
 R_X_INIT    =   int(W_WIDTH * 3.5 / 4 - R_SPACING/2)
 
+H_X         =   int(W_WIDTH * 3.1 / 4)
+H_Y         =   int(W_HEIGHT * 0.1 / 8)
+H_WIDTH     =   int(W_WIDTH * 0.8 / 4)
+H_HEIGHT    =   int(H_Y * 8)
+
 BRD_FG      =   (150,75,0)
 BRD_HL      =   (170,85,0)
 BRD_HOLE    =   (60,30,0)
