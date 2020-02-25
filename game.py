@@ -6,13 +6,36 @@ import pygame as pg
 import random as rn
 import copy
 
-
 pg.init()
 screen = pg.display.set_mode(W_SIZE)
-a_canvas = pg.Surface(W_SIZE,pg.SRCALPHA,32)
 
-lbimg = pg.transform.scale(pg.image.load("lb.png").convert_alpha(),(H_WIDTH,H_HEIGHT))
-diceimg = pg.transform.scale(pg.image.load("dice.png").convert_alpha(),(H_WIDTH,H_HEIGHT))
+g_lbimg = pg.transform.scale(pg.image.load("lb.png").convert_alpha(),(H_WIDTH,H_HEIGHT))
+g_diceimg = pg.transform.scale(pg.image.load("dice.png").convert_alpha(),(H_WIDTH,H_HEIGHT))
+g_a_canvas = pg.Surface(W_SIZE,pg.SRCALPHA,32)
+
+def drawGui(guess,sources,activeRow):
+    g_a_canvas.fill((0,0,0,0))
+    if not init:
+        for p in activeRow:
+            pg.draw.circle(g_a_canvas,BRD_HOLE,p,DOT_RADIUS)
+        g_a_canvas.blit(g_diceimg,(H_X,H_Y))
+    else:
+        g_a_canvas.blit(g_lbimg,(H_X,H_Y))
+        (_,p) = ai.getRow(brd.getHistory(),brd.getResults())
+        f = pg.font.Font(pg.font.get_default_font(),12)
+        ptext = f.render("{}".format(p),True,(0,0,0))
+        g_a_canvas.blit(ptext,(G_X_SPAN+8,A_Y * 2 - 5 - 12))
+    for c in sources + guess:
+        if c != None:
+            c.draw(g_a_canvas)
+    if dragC != None:
+        shadow = copy.copy(dragC)
+        shadow.pos = (shadow.pos[0] + 5,shadow.pos[1] + 5)
+        shadow.col = (0,0,0,125)
+        shadow.draw(g_a_canvas)
+        dragC.draw(g_a_canvas)
+
+    return g_a_canvas
 
 dragC = None
 brd = Board()
@@ -94,32 +117,10 @@ while run:
             if dragC != None:
                 dragC.move(e.pos)
 
-    a_canvas.fill((0,0,0,0))
     brd.draw(screen)
-
-    if not init:
-        for p in activeRow:
-            pg.draw.circle(screen,BRD_HOLE,p,DOT_RADIUS)
-        a_canvas.blit(diceimg,(H_X,H_Y))
-    else:
-        a_canvas.blit(lbimg,(H_X,H_Y))
-        (_,p) = ai.getRow(brd.getHistory(),brd.getResults())
-        f = pg.font.Font(pg.font.get_default_font(),12)
-        ptext = f.render("{}".format(p),True,(0,0,0))
-        screen.blit(ptext,(G_X_SPAN+8,A_Y * 2 - 5 - 12))
-    for c in sources:
-        c.draw(screen)
-    for c in guess: 
-        if c != None:
-            c.draw(screen)
-    if dragC != None:
-        shadow = copy.copy(dragC)
-        shadow.pos = (shadow.pos[0] + 5,shadow.pos[1] + 5)
-        shadow.col = (0,0,0,125)
-        shadow.draw(a_canvas)
-        dragC.draw(a_canvas)
     
-    screen.blit(a_canvas,(0,0))
+    ac = drawGui(guess,sources,activeRow)
+    screen.blit(ac,(0,0))
     pg.display.update()
 
 pg.quit()
